@@ -178,7 +178,7 @@ namespace Test.Controllers
 
             var docPath = new DocumentPath<dynamic>(Id).Index(_index_name);
             var response = client.Delete<dynamic>(docPath, d => d.Refresh(Refresh.True));
-            return Ok(response);
+            return Ok();
         }
     }
 }
