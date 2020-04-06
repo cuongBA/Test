@@ -180,5 +180,28 @@ namespace Test.Controllers
             var response = client.Delete<dynamic>(docPath, d => d.Refresh(Refresh.True));
             return Ok();
         }
+        [HttpGet("beginwithsearch")]
+        public async Task<IActionResult> BeginWithSearch(string value)
+        {
+
+            if (String.IsNullOrEmpty(value)) return NotFound();
+            string _value = value.ToLower();
+            var query = QueryBuilder.match_first_word("Road", _value);
+            var request1 = new CountRequest(_index_name)
+            {
+                Query = query
+            };
+            var resultSet = client.Count(request1);
+            if (resultSet.Count == 0) return Ok("Nothing found");
+
+            var request = new SearchRequest(_index_name)
+            {
+                From = 0,
+                Size = (int)resultSet.Count,
+                Query = query
+            };
+            var response = client.Search<dynamic>(request);            
+            return Ok(new { ResultCount = response.Hits.Count, ResultSet = response.Documents });
+        }
     }
 }
